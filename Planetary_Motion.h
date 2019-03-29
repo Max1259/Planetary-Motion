@@ -14,7 +14,9 @@ public:
 
 	double x, y;
 	double vx, vy;
-	double an, ax, ay;
+	double fx, fy, f;
+	double dy, dx;
+	float theta;
 	double mass;
 	
 	void get_planets();

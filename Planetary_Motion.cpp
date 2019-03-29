@@ -14,7 +14,7 @@
 
 std::vector<BODIES> planet_vec;
 std::vector<double> pos_vec;
-std::vector<BODIES> acceleration_vec;
+std::vector<BODIES> force_vec;
 int time_step = 60;
 double current_time = 0;
 int num_bodies;
@@ -94,10 +94,10 @@ void BODIES::trajectory() {
 	//get initial acceleration values for each body, push into acceleration vector
 	for (unsigned int i = 0; i < num_bodies; i++) {
 		
-		BODIES acceleration;
+		BODIES force;
 
-		acceleration.ax = 0;
-		acceleration.ay = 0;
+		force.fx = 0;
+		force.fy = 0;
 		
 		for (unsigned int j = 0; j < num_bodies; j++) {
 
@@ -106,13 +106,16 @@ void BODIES::trajectory() {
 			}
 			else {
 
-				acceleration.ax += G * planet_vec[j].mass * (planet_vec[j].x - planet_vec[i].x) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
-				acceleration.ay += G * planet_vec[j].mass * (planet_vec[j].y - planet_vec[i].y) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
-
+				force.dx = (planet_vec[j].x - planet_vec[i].x);
+				force.dy = (planet_vec[j].y - planet_vec[i].y);
+				force.f = (G * planet_vec[i].mass * planet_vec[j].mass) / (pow(force.dy, 2) + pow(force.dx, 2));
+				force.theta = atan2f(force.dy, force.dx);
+				force.fx += force.f * cos(force.theta);
+				force.fy += force.f * sin(force.theta);
 			}
 		}
 
-		acceleration_vec.push_back(acceleration);
+		force_vec.push_back(force);
 	}
 	
 	current_time += time_step;
@@ -121,17 +124,17 @@ void BODIES::trajectory() {
 
 		for (unsigned int i = 0; i < num_bodies; i++) {
 
-			planet_vec[i].vx = planet_vec[i].vx + (acceleration_vec[i].ax * time_step);
-			planet_vec[i].vy = planet_vec[i].vy + (acceleration_vec[i].ay * time_step);
+			planet_vec[i].vx += (force_vec[i].fx / planet_vec[i].mass) * time_step;
+			planet_vec[i].vy += (force_vec[i].fy / planet_vec[i].mass) * time_step;
 
-			planet_vec[i].x = planet_vec[i].x + (planet_vec[i].vx * time_step);
-			planet_vec[i].y = planet_vec[i].y + (planet_vec[i].vy * time_step);
+			planet_vec[i].x += (planet_vec[i].vx * time_step);
+			planet_vec[i].y += (planet_vec[i].vy * time_step);
 
 			pos_vec.push_back(planet_vec[i].x);
 			pos_vec.push_back(planet_vec[i].y);
 
-			acceleration_vec[i].ax = 0;
-			acceleration_vec[i].ay = 0;
+			force_vec[i].fx = 0;
+			force_vec[i].fy = 0;
 
 			for (unsigned int j = 0; j < num_bodies; j++) {
 
@@ -140,9 +143,12 @@ void BODIES::trajectory() {
 				}
 				else {
 
-					acceleration_vec[i].ax += G * planet_vec[j].mass * (planet_vec[j].x - planet_vec[i].x) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
-					acceleration_vec[i].ay += G * planet_vec[j].mass * (planet_vec[j].y - planet_vec[i].y) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
-
+					force_vec[i].dx = (planet_vec[j].x - planet_vec[i].x);
+					force_vec[i].dy = (planet_vec[j].y - planet_vec[i].y);
+					force_vec[i].f = (G * planet_vec[i].mass * planet_vec[j].mass) / (pow(force_vec[i].dy, 2) + pow(force_vec[i].dx, 2));
+					force_vec[i].theta = atan2f(force_vec[i].dy, force_vec[i].dx);
+					force_vec[i].fx += force_vec[i].f * cos(force_vec[i].theta);
+					force_vec[i].fy += force_vec[i].f * sin(force_vec[i].theta);
 				}
 			}
 		}
@@ -177,7 +183,7 @@ void BODIES::output() {
 			outfile << scientific << pos_vec[i] << "    ";
 		}
 
-		pos_vec.erase(pos_vec.begin(), pos_vec.begin() + 6);
+		pos_vec.erase(pos_vec.begin(), pos_vec.begin() + (num_bodies * 2));
 		outfile << endl;
 	}
 
