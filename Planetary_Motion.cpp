@@ -15,7 +15,7 @@
 std::vector<BODIES> planet_vec;
 std::vector<double> pos_vec;
 std::vector<BODIES> acceleration_vec;
-int time_step = 3600;
+int time_step = 60;
 double current_time = 0;
 int num_bodies;
 
@@ -96,7 +96,8 @@ void BODIES::trajectory() {
 		
 		BODIES acceleration;
 
-		acceleration.an = 0;
+		acceleration.ax = 0;
+		acceleration.ay = 0;
 		
 		for (unsigned int j = 0; j < num_bodies; j++) {
 
@@ -104,23 +105,14 @@ void BODIES::trajectory() {
 				continue;
 			}
 			else {
-				acceleration.an += (G * planet_vec[j].mass) / pow(hypot(planet_vec[i].x, planet_vec[i].y) - hypot(planet_vec[j].x, planet_vec[j].y), 2);
+
+				acceleration.ax += G * planet_vec[j].mass * (planet_vec[j].x - planet_vec[i].x) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
+				acceleration.ay += G * planet_vec[j].mass * (planet_vec[j].y - planet_vec[i].y) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
+
 			}
 		}
 
-		if (planet_vec[i].x == 0 && planet_vec[i].y == 0) {
-			
-			acceleration.ax = 0;
-			acceleration.ay = 0;
-
-		} else {
-
-			acceleration.ax = -1 * (acceleration.an) * (planet_vec[i].x) / (hypot(planet_vec[i].x, planet_vec[i].y));
-			acceleration.ay = -1 * (acceleration.an) * (planet_vec[i].y) / (hypot(planet_vec[i].x, planet_vec[i].y));
-		}
-
 		acceleration_vec.push_back(acceleration);
-
 	}
 	
 	current_time += time_step;
@@ -138,7 +130,8 @@ void BODIES::trajectory() {
 			pos_vec.push_back(planet_vec[i].x);
 			pos_vec.push_back(planet_vec[i].y);
 
-			acceleration_vec[i].an = 0;
+			acceleration_vec[i].ax = 0;
+			acceleration_vec[i].ay = 0;
 
 			for (unsigned int j = 0; j < num_bodies; j++) {
 
@@ -146,18 +139,11 @@ void BODIES::trajectory() {
 					continue;
 				}
 				else {
-					acceleration_vec[i].an += (G * planet_vec[j].mass) / pow(hypot(planet_vec[i].x, planet_vec[i].y) - hypot(planet_vec[j].x, planet_vec[j].y), 2);
+
+					acceleration_vec[i].ax += G * planet_vec[j].mass * (planet_vec[j].x - planet_vec[i].x) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
+					acceleration_vec[i].ay += G * planet_vec[j].mass * (planet_vec[j].y - planet_vec[i].y) / pow(hypot((planet_vec[i].x - planet_vec[j].x), (planet_vec[i].y - planet_vec[j].y)), 3);
+
 				}
-			}
-			if (planet_vec[i].x == 0 && planet_vec[i].y == 0) {
-
-				acceleration_vec[i].ax = 0;
-				acceleration_vec[i].ay = 0;
-			} 
-			else {
-
-				acceleration_vec[i].ax = -(acceleration_vec[i].an) * (planet_vec[i].x) / (hypot(planet_vec[i].x, planet_vec[i].y));
-				acceleration_vec[i].ay = -(acceleration_vec[i].an) * (planet_vec[i].y) / (hypot(planet_vec[i].x, planet_vec[i].y));
 			}
 		}
 
@@ -186,7 +172,7 @@ void BODIES::output() {
 
 	while (pos_vec.size() > 0) {
 
-		for (unsigned int i = 0; i < 6; i++) {
+		for (unsigned int i = 0; i < (num_bodies * 2); i++) {
 			outfile.precision(4);
 			outfile << scientific << pos_vec[i] << "    ";
 		}
