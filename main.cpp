@@ -3,7 +3,6 @@
 
 BODIES body;
 
-
 int main() {
 
 	body.get_planets();
