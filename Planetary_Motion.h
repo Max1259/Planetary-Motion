@@ -12,7 +12,7 @@ class BODIES {
 
 private:
 
-	int time_step = 60; //the change in time used for updating velocity and position
+	int time_step; //the change in time used for updating velocity and position
 	double current_time = 0; //holds the current time
 	int num_bodies; //holds the number of planetary objects
 	double x, y; //holds x, y coordinate values

@@ -105,6 +105,9 @@ void BODIES::get_planets() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 void BODIES::trajectory() {
 
+	cout << "Enter the desired time step for calculations (in seconds): "; //let the user determine the time step
+	cin >> time_step;
+
 	for (unsigned int i = 0; i < num_bodies; i++) { //loop through each body to find forces
 		
 		BODIES force; //create a new BODIES object to create intial forces
