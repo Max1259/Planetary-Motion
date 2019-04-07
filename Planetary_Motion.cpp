@@ -87,7 +87,6 @@ void BODIES::get_planets() {
 		line.erase(line.begin() + found, line.end());
 		new_planet.vy = stod(line);
 
-		
 		planet_vec.push_back(new_planet); //store the planet's information in the planet vector
 		
 		//store the intial x and y position in the position vector
@@ -104,8 +103,6 @@ void BODIES::get_planets() {
 // of each body in the system for the time interval defined above. The positions are stored in a vector  //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 void BODIES::trajectory() {
-
-	int test = 0;
 
 	cout << "Enter the desired time step for calculations (in seconds): "; //let the user determine the time step
 	cin >> time_step;
@@ -157,7 +154,7 @@ void BODIES::trajectory() {
 			pos_vec.push_back(planet_vec[i].x);
 			pos_vec.push_back(planet_vec[i].y);
 
-		}
+		} //end for loop
 
 		for (unsigned int i = 0; i < num_bodies; i++) { //loop through each body to redetermine components of force
 
@@ -181,13 +178,6 @@ void BODIES::trajectory() {
 				
 				} //end if else
 			} //end for loop
-			if (test < 9) {
-				std::cout << "vel	" << planet_vec[i].vx << '\t' << planet_vec[i].vy << endl;
-				std::cout << "pos	" << planet_vec[i].x << '\t' << planet_vec[i].y << endl;
-				std::cout << "force	" << force_vec[i].fx << '\t' << force_vec[i].fy << endl;
-				test++;
-			}
-			
 		} //end for loop
 
 		current_time += time_step; //increase the current time by one time step
