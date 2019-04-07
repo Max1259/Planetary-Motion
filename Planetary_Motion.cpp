@@ -105,6 +105,8 @@ void BODIES::get_planets() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 void BODIES::trajectory() {
 
+	int test = 0;
+
 	cout << "Enter the desired time step for calculations (in seconds): "; //let the user determine the time step
 	cin >> time_step;
 
@@ -134,13 +136,14 @@ void BODIES::trajectory() {
 		} //end for loop
 
 		force_vec.push_back(force); //store the force object in the force vector
+
 	} //end for loop
-	
+		
 	current_time += time_step; //increase the time step
 
 	while (current_time <= TOTAL_TIME) { //loop while the current time is less than or equal to the total desired interval
 
-		for (unsigned int i = 0; i < num_bodies; i++) { //loop through each body
+		for (unsigned int i = 0; i < num_bodies; i++) { //loop through each body to calculate new velocities and positions
 
 			//calculate the current velocity values using the force from the previous time step and the mass of the body
 			planet_vec[i].vx += (force_vec[i].fx / planet_vec[i].mass) * time_step;
@@ -154,11 +157,15 @@ void BODIES::trajectory() {
 			pos_vec.push_back(planet_vec[i].x);
 			pos_vec.push_back(planet_vec[i].y);
 
+		}
+
+		for (unsigned int i = 0; i < num_bodies; i++) { //loop through each body to redetermine components of force
+
 			//reset the force component values
 			force_vec[i].fx = 0;
 			force_vec[i].fy = 0;
 
-			for (unsigned int j = 0; j < num_bodies; j++) { //loop through each body to redetermine the forces on the current body
+			for (unsigned int j = 0; j < num_bodies; j++) { //loop through each other body to redetermine the forces on the current body
 
 				if (j == i) { //current body cannot have a force on itself, so skip if j == i
 					continue;
@@ -174,6 +181,13 @@ void BODIES::trajectory() {
 				
 				} //end if else
 			} //end for loop
+			if (test < 9) {
+				std::cout << "vel	" << planet_vec[i].vx << '\t' << planet_vec[i].vy << endl;
+				std::cout << "pos	" << planet_vec[i].x << '\t' << planet_vec[i].y << endl;
+				std::cout << "force	" << force_vec[i].fx << '\t' << force_vec[i].fy << endl;
+				test++;
+			}
+			
 		} //end for loop
 
 		current_time += time_step; //increase the current time by one time step
